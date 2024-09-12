@@ -43,15 +43,15 @@ public class RouteController {
     try {
       Map<String, Department> departmentMapping;
       departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+      Department department = departmentMapping.get(deptCode.toUpperCase(Locale.ROOT));
 
-      if (!departmentMapping.containsKey(deptCode.toUpperCase(Locale.ROOT))) {
-        return new ResponseEntity<>("Department Not Found", HttpStatus.OK);
-      } else {
-        return new ResponseEntity<>(departmentMapping.get(
-                deptCode.toUpperCase(Locale.ROOT)).toString(),
-                HttpStatus.NOT_FOUND);
+      // !departmentMapping.containsKey(deptCode.toUpperCase(Locale.ROOT))
+      if (department == null) {
+        return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
       }
-
+      else {
+        return new ResponseEntity<>(department.toString(), HttpStatus.OK);
+      }
     } catch (Exception e) {
       return handleException(e);
     }
@@ -77,26 +77,24 @@ public class RouteController {
           @RequestParam("courseCode") int courseCode
   ) {
     try {
-      boolean doesDepartmentExists = retrieveDepartment(deptCode).getStatusCode() == HttpStatus.OK;
-      if (doesDepartmentExists) {
-        Map<String, Department> departmentMapping;
-        departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
-        Map<String, Course> coursesMapping;
-        coursesMapping = departmentMapping.get(deptCode).getCourseSelection();
-
-        if (!coursesMapping.containsKey(Integer.toString(courseCode))) {
-          return new ResponseEntity<>("Course Not Found", HttpStatus.NOT_FOUND);
-        } else {
-          return new ResponseEntity<>(coursesMapping.get(Integer.toString(courseCode)).toString(),
-              HttpStatus.FORBIDDEN);
-        }
-
+      // Get department mapping from the database
+      Map<String, Department> departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+      Department department = departmentMapping.get(deptCode.toUpperCase(Locale.ROOT));
+      if (department == null) {
+        return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
       }
-      return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
+      Map<String, Course> coursesMapping = department.getCourseSelection();
+      Course course = coursesMapping.get(Integer.toString(courseCode));
+      if (course == null) {
+        return new ResponseEntity<>("Course Not Found", HttpStatus.NOT_FOUND);
+      }
+      return new ResponseEntity<>(course.toString(), HttpStatus.OK);
+
     } catch (Exception e) {
       return handleException(e);
     }
   }
+
 
   /**
    * Displays whether the course has at minimum reached its enrollmentCapacity.
@@ -154,10 +152,10 @@ public class RouteController {
       if (doesDepartmentExists) {
         Map<String, Department> departmentMapping;
         departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
-        return new ResponseEntity<>("There are: " + -departmentMapping.get(deptCode)
+        return new ResponseEntity<>("There are: " + departmentMapping.get(deptCode)
             .getNumberOfMajors() + " majors in the department", HttpStatus.OK);
       }
-      return new ResponseEntity<>("Department Not Found", HttpStatus.FORBIDDEN);
+      return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
     } catch (Exception e) {
       return handleException(e);
     }
@@ -558,7 +556,7 @@ public class RouteController {
 
   private ResponseEntity<?> handleException(Exception e) {
     System.out.println(e.toString());
-    return new ResponseEntity<>("An Error has occurred", HttpStatus.OK);
+    return new ResponseEntity<>("An Error has occurred", HttpStatus.BAD_REQUEST);
   }
 
 

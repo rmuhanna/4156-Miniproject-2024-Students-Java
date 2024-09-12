@@ -20,11 +20,14 @@ public class Course implements Serializable {
    * @param capacity           The maximum number of students that can enroll in the course.
    */
   public Course(String instructorName, String courseLocation, String timeSlot, int capacity) {
+    if (capacity < 0) {
+      throw new IllegalArgumentException("Negative capacity are not allowed");
+    }
     this.courseLocation = courseLocation;
     this.instructorName = instructorName;
     this.courseTimeSlot = timeSlot;
     this.enrollmentCapacity = capacity;
-    this.enrolledStudentCount = 500;
+    this.enrolledStudentCount = 0;
   }
 
   /**
@@ -33,7 +36,10 @@ public class Course implements Serializable {
    * @return true if the student is successfully enrolled, false otherwise.
    */
   public boolean enrollStudent() {
-    enrolledStudentCount++;
+    if (enrolledStudentCount < enrollmentCapacity) {
+      enrolledStudentCount++;
+      return true;
+    }
     return false;
   }
 
@@ -43,7 +49,10 @@ public class Course implements Serializable {
    * @return true if the student is successfully dropped, false otherwise.
    */
   public boolean dropStudent() {
-    enrolledStudentCount--;
+    if (enrolledStudentCount > 0) {
+      enrolledStudentCount--;
+      return true;
+    }
     return false;
   }
 
@@ -60,6 +69,10 @@ public class Course implements Serializable {
 
   public String getCourseTimeSlot() {
     return this.courseTimeSlot;
+  }
+
+  public int getEnrolledStudentCount() {
+    return this.enrolledStudentCount;
   }
 
   /**
@@ -92,12 +105,18 @@ public class Course implements Serializable {
 
 
   public void setEnrolledStudentCount(int count) {
-    this.enrolledStudentCount = count;
+    if (count < 0) {
+      throw new IllegalArgumentException("Negative Enrolled student count are not allowed.");
+    }
+    if (count <= enrollmentCapacity) {
+      this.enrolledStudentCount = count;
+    }
   }
 
 
+
   public boolean isCourseFull() {
-    return enrollmentCapacity > enrolledStudentCount;
+    return enrolledStudentCount >= enrollmentCapacity;
   }
 
   @Serial
