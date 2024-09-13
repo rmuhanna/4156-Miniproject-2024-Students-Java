@@ -1,0 +1,158 @@
+Brief: This file will list all the bugs that I found in the code base which is split into two parts [manual bugs catching, using static bug finder tool]
+Section 1: Manual Bug
+Section 1.1: Bugs in Course Class
+	1	
+
+public String getInstructorName() {
+  return this.courseLocation;
+}
+Issue: invalidReturnDescription: It should return instructorName
+	2	
+
+public String getCourseLocation() {
+  return this.instructorName;
+}
+Issue: invalidReturnDescription: It should return courseLocation
+	3	
+
+public boolean enrollStudent() {
+  enrolledStudentCount++;
+  return false;
+}
+Issue: logicalError does not handle all the casesDescription: It should return true if it increments enrolledStudentCount and succeeds (within the capacity so check added), otherwise return false
+	4	
+
+public boolean dropStudent() {
+  enrolledStudentCount--;
+  return false;
+}
+Issue: logicalError does not handle all the casesDescription: It should drop the student from the course (decrement the counter) if it is greater than 0 (check added) and return true, otherwise false
+	5	
+
+public boolean isCourseFull() {
+  return enrollmentCapacity > enrolledStudentCount;
+}
+Issue:  Description: It should be the opposite enrolledStudentCount >= enrollmentCapacity and with = implying if it reaches maximum capacity it is full
+	6	
+public Course(String instructorName, String courseLocation, String timeSlot, int capacity) {
+  this.courseLocation = courseLocation;
+  this.instructorName = instructorName;
+  this.courseTimeSlot = timeSlot;
+  this.enrollmentCapacity = capacity;
+  this.enrolledStudentCount = 500;
+}
+Issue: Description: Course constructors accept negative capacity. Handle the case by checking and throwing IllegalArgumentException
+	7	
+public void setEnrolledStudentCount(int count) {
+  this.enrolledStudentCount = count;
+}
+Issue: Description: setEnrolledStudentCount accepts the negative argument. Handle the case by throwing IllegalArgumentException
+	8	Issue: [lll]Description: setEnrolledStudentCount accepts number EnrolledStudentCount int that is larger than capacity. Handle the case by ignoring it and just update if it <= enrollmentCapacity
+based on ed response.
+	8	Issue:Description: Initial enrolledStudentCount is 500 should be replaced by 0
+
+Section 1.2: Bugs in Department Class
+	1	
+public int getNumberOfMajors() {
+  return -this.numberOfMajors;
+}
+Issue:Description: There is no need for the negative sign
+	2	
+public String getDepartmentChair() {
+  return "this.departmentChair";
+}
+Issue:Description: No need for the "" should be removed
+	3	
+public void dropPersonFromMajor() {
+  numberOfMajors--;
+}
+Issue:Description: Missing check to enforce it will execute if it is greater than 0 only
+	4	
+public String toString() {
+  StringBuilder result = new StringBuilder();
+  for (Map.Entry<String, Course> entry : courses.entrySet()) {
+    String key = entry.getKey();
+    Course value = entry.getValue();
+    result.append(deptCode).append(" ").append(key).append(": ").append(value.toString())
+      .append("\n");
+  }
+  return "result.toString()";
+}
+Issue:Description: "" no need for the "" in the return should be removed
+	5	Issue: Description: public void createCourse(String courseId, String instructorName, String courseLocation, String courseTimeSlot, int capacity) Before a new instance is added we should check if it already exists (to avoid duplicates) otherwise throw IllegalArgumentException
+Section 1.3: Bugs in RouteController Class
+	1	Incorrect HTTP STATUS returned in retrieveDepartment
+@GetMapping(value = "/retrieveDept", produces = MediaType.APPLICATION_JSON_VALUE)
+public ResponseEntity<?> retrieveDepartment(@RequestParam("deptCode") String deptCode) {
+  try {
+    Map<String, Department> departmentMapping;
+    departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+    if (!departmentMapping.containsKey(deptCode.toUpperCase(Locale.ROOT))) {
+      return new ResponseEntity<>("Department Not Found", HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(departmentMapping.get(
+          deptCode.toUpperCase(Locale.ROOT)).toString(),
+          HttpStatus.NOT_FOUND);
+    }
+  } catch (Exception e) {
+    return handleException(e);
+  }
+}
+Issue:Description: It should return HttpStatus.NOT_FOUND in case no department is found and HttpStatus.OK in case it is found
+
+	2	Incorrect HTTP STATUS returned in retrieveCourseDescription: It should return HttpStatus.NOT_FOUND in case no department is found or no course for the given department and HttpStatus.OK in case it is found (FORBIDDEN is not appropriate here)
+	3	getMajorCtFromDeptIssue:Description: Logical error - departmentMapping.get(deptCode) should be positive
+	4	getMajorCtFromDeptIssue:Description: It should return HttpStatus.NOT_FOUND instead of FORBIDDEN in case of not found
+	5	findCourseTimeIssue:Description: It should return the actual course timeslot instead of “some time”
+
+Section 2: [Static Tool]
+Please uses Readme for information about the tool.
+	1	Missing Override Annotation
+	◦	Issue Description: The @Override annotation is missing for the toString() method in the Course and Department classes.
+	◦	Location:
+	▪	Class Course.java - toString()
+	▪	Class Department.java - toString()
+	◦	Suggested Fix: Add @Override above the toString() methods in both classes.
+	2	Using Concrete Class Instead of Interface
+	◦	Issue Description: Concrete classes (HashMap) are used instead of interfaces (Map). This can lead to tight coupling and make it harder to change the underlying data structure later.
+	◦	Locations:
+	▪	Department.java - Courses, constructor, getCourseSelection(), toString()
+	▪	MyFileDatabase.java - departmentMapping, setMapping(), getCourseSelection(), getDepartmentMapping(), deSerializeObjectFromFile()
+	▪	RouteController.java - retrieveDepartment(), retrieveCourse(), isCourseFull(), getMajorCtFromDept(), identifyDeptChair(), findCourseLocation(), findCourseInstructor(), findCourseTime(), addMajorToDept(), removeMajorFromDept(), dropStudent(), changeCourseTime(), changeCourseTeacher()
+	◦	Suggested Fix: Use the Map interface for declarations and initialize with HashMap in the constructor or methods.
+	3	Unnecessary Import Statement
+	◦	Issue Description: Import statements that are not used can cause confusion and clutter.
+	◦	Location: RouteController.java - PathVariable, PostMapping, RequestBody, RequestMapping
+	◦	Suggested Fix: Remove unused import statements.
+	4	Unnecessary Annotation Value Element
+	◦	Issue Description: If @RequestParam has only one parameter, the value element can be omitted.
+	◦	Example:
+	▪	Current: @RequestParam(value = "location")
+	▪	Corrected: @RequestParam("location")
+	5	Unused Constructor Parameter
+	◦	Issue Description: Constructor parameter is not used within the constructor.
+	◦	Static Tool Name: UnusedFormalParameter
+	◦	Location: Department constructor
+	◦	Suggested Fix: Remove or use the parameter if necessary.
+	6	Unused Private Fields
+	◦	Issue Description: Private fields are declared but not used.
+	◦	Static Tool Name: UnusedPrivateField
+	◦	Location: Department.java - departmentChair
+	◦	Suggested Fix: Remove unused private fields or use them appropriately.
+	7	Incorrect Return Type
+	◦	Issue Description: Returning null instead of an empty collection.
+	◦	Static Tool Name: ReturnEmptyCollectionRatherThanNull
+	◦	Location: MyFileDatabase.java
+	◦	Suggested Fix: Return an empty collection instead of null.
+	8	Potential Null Pointer Exception
+	◦	Issue Description: Possible null pointer exception when performing string comparison.
+	◦	Static Tool Name: LiteralsFirstInComparisons
+	◦	Location: IndivisualProjectApplication.java
+	◦	Suggested Fix: Use literals first in comparisons.
+	9	Unused Local Variable
+	◦	Issue Description: Local variable is declared but not used.
+	◦	Static Tool Name: UnusedLocalVariable
+	◦	Location: RouteController.java - requestedCourse
+	◦	Suggested Fix: Remove the unused local variable or utilize it as needed.
+
+

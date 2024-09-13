@@ -1,12 +1,16 @@
 package dev.coms4156.project.individualproject;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+
+
 
 /**
  * Unit tests for the Department class.
@@ -17,6 +21,11 @@ public class DepartmentUnitTests {
   private Department department;
   private Map<String, Course> courses;
 
+  /**
+   * Sets up for testing.
+   * This method initializes a map of courses and assigns it to a department.
+   * It is executed before each test case to setup for testing.
+   */
   @BeforeEach
   public void setupDepartmentForTesting() {
     courses = new HashMap<>();
@@ -36,7 +45,8 @@ public class DepartmentUnitTests {
 
   @Test
   public void testToString() {
-    String expected = "COMS 1004: \nInstructor: Adam Cannon; Location: 417 IAB; Time: 11:40-12:55\n";
+    String expected = "COMS 1004: \n"
+        + "Instructor: Adam Cannon; Location: 417 IAB; Time: 11:40-12:55\n";
     assertEquals(expected, department.toString());
   }
 
@@ -61,11 +71,11 @@ public class DepartmentUnitTests {
 
   @Test
   public void testCreateCourse() {
-    department.createCourse("1010", "Jae Lee", "301 URIS", "4:10-5:25", 400); // Happy path
-    assertTrue(department.getCourseSelection().containsKey("1010"));
+    department.createCourse("3157", "Jae Lee", "417 IAB", "4:10-5:25", 400); // Happy path
+    assertTrue(department.getCourseSelection().containsKey("3157"));
 
     assertThrows(IllegalArgumentException.class, () -> {
-      department.createCourse("1004", "Jae Lee", "301 URIS", "4:10-5:25", 400); // Edge case
+      department.createCourse("3157", "Jae Lee", "417 IAB", "4:10-5:25", 400); // Edge case
     });
   }
 }

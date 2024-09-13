@@ -1,0 +1,7 @@
+While solving the assignments I stubmbel on these resources:
+- unit testing tutorial playlist (the link was shared on ED as well)
+https://youtu.be/BZBFw6fBeIU?si=cosO1giEIqf4wONr 
+- unit testing - Testing the Web Layer
+https://spring.io/guides/gs/testing-web
+- to learn more about Local (the static bugs finder reported relevent bug)
+ LOCAL.ROOT reference https://www.javastring.net/java/string/java-string-touppercase-method-examples#:~:text=Java%20String%20toUpperCase()%20method%20is%20used%20to%20convert%20the,for%20locale%20insensitive%20case%20conversion.

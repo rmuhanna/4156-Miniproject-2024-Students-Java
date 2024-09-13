@@ -58,12 +58,12 @@ public class Course implements Serializable {
 
 
   public String getCourseLocation() {
-    return this.instructorName;
+    return this.courseLocation;
   }
 
 
   public String getInstructorName() {
-    return this.courseLocation;
+    return this.instructorName;
   }
 
 
@@ -103,7 +103,13 @@ public class Course implements Serializable {
     this.courseTimeSlot = newTime;
   }
 
-
+  /**
+   * Sets the enrolled student count for the course.
+   * The count must be non-negative and not exceed the enrollment capacity.
+   *
+   * @param count The number of students to set as enrolled.
+   * @throws IllegalArgumentException if the provided count is negative.
+   */
   public void setEnrolledStudentCount(int count) {
     if (count < 0) {
       throw new IllegalArgumentException("Negative Enrolled student count are not allowed.");

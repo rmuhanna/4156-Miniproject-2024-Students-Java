@@ -45,11 +45,9 @@ public class RouteController {
       departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
       Department department = departmentMapping.get(deptCode.toUpperCase(Locale.ROOT));
 
-      // !departmentMapping.containsKey(deptCode.toUpperCase(Locale.ROOT))
       if (department == null) {
         return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
-      }
-      else {
+      } else {
         return new ResponseEntity<>(department.toString(), HttpStatus.OK);
       }
     } catch (Exception e) {
@@ -73,12 +71,12 @@ public class RouteController {
    */
   @GetMapping(value = "/retrieveCourse", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> retrieveCourse(
-          @RequestParam("deptCode") String deptCode,
-          @RequestParam("courseCode") int courseCode
+      @RequestParam("deptCode") String deptCode,
+      @RequestParam("courseCode") int courseCode
   ) {
     try {
-      // Get department mapping from the database
-      Map<String, Department> departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+      Map<String, Department> departmentMapping =
+              IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
       Department department = departmentMapping.get(deptCode.toUpperCase(Locale.ROOT));
       if (department == null) {
         return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
@@ -506,7 +504,7 @@ public class RouteController {
 
         Course requestedCourse = coursesMapping.get(Integer.toString(courseCode));
         requestedCourse.reassignInstructor(teacher);
-        return new ResponseEntity<>("Attributed was updated successfully.", HttpStatus.OK);
+        return new ResponseEntity<>("Attribute was updated successfully.", HttpStatus.OK);
       } else {
         return new ResponseEntity<>("Course Not Found", HttpStatus.NOT_FOUND);
       }
@@ -545,7 +543,7 @@ public class RouteController {
 
         Course requestedCourse = coursesMapping.get(Integer.toString(courseCode));
         requestedCourse.reassignLocation(location);
-        return new ResponseEntity<>("Attributed was updated successfully.", HttpStatus.OK);
+        return new ResponseEntity<>("Attribute was updated successfully.", HttpStatus.OK);
       } else {
         return new ResponseEntity<>("Course Not Found", HttpStatus.NOT_FOUND);
       }
