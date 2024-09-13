@@ -1,6 +1,9 @@
 package dev.coms4156.project.individualproject;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,22 +26,25 @@ public class CourseUnitTests {
 
   @Test
   public void testCourseWithNegativeCapacity() {
-    assertThrows(IllegalArgumentException.class, () -> new Course("Gail Kaiser", "501 NWC", "Setup SDK", -1));
+    assertThrows(IllegalArgumentException.class, ()
+            -> new Course("Gail Kaiser", "501 NWC", "Setup SDK", -1));
   }
 
   @Test
-  public void setEnrolledStudentCountTest() {
+  public void setEnrolledStudentCountTestWithenCapacity() {
     // Happy path
-//    testCourseData.setEnrolledStudentCount(109);
-//    assertEquals(109, testCourse.getEnrolledStudentCount());
+    testCourseData.setEnrolledStudentCount(109);
+    assertEquals(109, testCourseData.getEnrolledStudentCount());
+  }
 
+  @Test
+  public void setEnrolledStudentCountTestNotWithenCapacity() {
     // Edge case negative argement
     assertThrows(IllegalArgumentException.class, () -> testCourse.setEnrolledStudentCount(-1));
 
     // Edge case: student count greater than capacity
     testCourse.setEnrolledStudentCount(300);
     assertEquals(0, testCourse.getEnrolledStudentCount());
-//    assertThrows(IllegalArgumentException.class, () -> testCourse.setEnrolledStudentCount(300));
   }
 
   @Test
@@ -60,13 +66,13 @@ public class CourseUnitTests {
 
   }
 
-
+  @Test
   public void isCourseFullTest() {
-    testCourse.setEnrolledStudentCount(119); // Happy Path
-    assertFalse(testCourse.isCourseFull());
+    testCourseData.setEnrolledStudentCount(119); // Happy Path
+    assertFalse(testCourseData.isCourseFull());
 
-    testCourse.enrollStudent(); // Edge case
-    assertTrue(testCourse.isCourseFull());
+    testCourseData.enrollStudent(); // Edge case
+    assertTrue(testCourseData.isCourseFull());
   }
 
   @Test
@@ -79,7 +85,21 @@ public class CourseUnitTests {
   public void reassignTimeTest() {
     String newTime = "11:40-12:55";
     testCourseData.reassignTime(newTime);
-    assertEquals(newTime,testCourseData.getCourseTimeSlot());
+    assertEquals(newTime, testCourseData.getCourseTimeSlot());
+  }
+
+  @Test
+  public void reassignLocationTest() {
+    String newLocation = "301 URIS";
+    testCourseData.reassignLocation(newLocation);
+    assertEquals(newLocation, testCourseData.getCourseLocation());
+  }
+
+  @Test
+  public void reassignInstructorTest() {
+    String newInstructor = "Adam Cannon";
+    testCourseData.reassignInstructor(newInstructor);
+    assertEquals(newInstructor, testCourseData.getInstructorName());
   }
 
   /** The test course instance used for testing. */
